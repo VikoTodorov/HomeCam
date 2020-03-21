@@ -1,3 +1,6 @@
 *.log
 *.pyc
 *.db
+__pycache__
+WEBService/connect.py
+env/
