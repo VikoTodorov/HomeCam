@@ -5,8 +5,8 @@ from mysql.connector import Error
 def connect():
     try:
         conn = mysql.connector.connect(host='localhost',
-                                       user='root',
-                                       password='pass')
+                                       user='viko',
+                                       password='mysqlpsw')
         if conn.is_connected():
             return conn
     except Error as e:
