@@ -14,11 +14,12 @@ def insert_user(values):
 
 
 def extract_user(email):
-    conn = database.connect()
-    conn.connect(database="OurDB")
+    fconn = database.connect()
+    fconn.connect(database="OurDB")
     try:
-        conn.cursor().execute('SELECT * FROM Users WHERE Email = %s', \
-                                    (email, ))
-        return conn.cursor().fetchone()
+        conn = fconn.cursor()
+        sql = 'SELECT * FROM Users WHERE Email = %s'
+        conn.execute(sql, (email, ))
+        return conn.fetchone()
     except Error as e:
         print(e)

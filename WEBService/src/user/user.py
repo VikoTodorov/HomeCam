@@ -32,7 +32,7 @@ class User:
         database.insert_user(values)
 
     def verify_pass(self, password):
-        return self.getPass == user.crypt_psw(password)
+        return self.getPass() == user.crypt_psw(password)
 
     @staticmethod
     def find_user(email):

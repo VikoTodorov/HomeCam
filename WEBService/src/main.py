@@ -62,9 +62,9 @@ def login():
             if not user:
                 return render_template("/login.html", error="Invalid email or \
                                        password")
-            elif verify_pass(password):
+            elif user.verify_pass(password):
                 session['email'] = email
-                return render_template('/homepage')
+                return redirect(url_for('homepage'))
             else:
                 return render_template("/login.html", error="Invalid email or \
                                        password")
