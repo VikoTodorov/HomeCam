@@ -5,6 +5,7 @@ import database
 from user import User
 from user import pass_func
 
+from WEBService.src.user import crypt_psw
 
 app = Flask(__name__)
 app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
@@ -39,8 +40,9 @@ def register():
                           request.form['email'],
                           request.form['psw'])
                 User(*values).create()
-                #session['email'] = email
-                return redirect(url_for('index'))
+                email = request.form['email']
+                session['email'] = email
+                return redirect(url_for('homepage'))
             else:
                 return render_template('register.html', error="You can't use \
                                        that email")
