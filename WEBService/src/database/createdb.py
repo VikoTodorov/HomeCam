@@ -12,9 +12,9 @@ conn.cursor().execute('''CREATE TABLE IF NOT EXISTS Users
                       Lname VARCHAR(128),
                       Psw VARCHAR(255));''')
 
-conn.cursor().execute('''CREATE TABLE IF NOT EXISTS Keys
+conn.cursor().execute('''CREATE TABLE IF NOT EXISTS StreamKeys
                       (Id INT NOT NULL,
-                      Key VARCHAR(255),
-                      PRIMARY KEY (Id, Key),
+                      Skey VARCHAR(255),
+                      PRIMARY KEY (Id, Skey),
                       FOREIGN KEY (Id) REFERENCES Users(Id)
                       ON DELETE CASCADE);''')
