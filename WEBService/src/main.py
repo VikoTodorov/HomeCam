@@ -3,9 +3,7 @@ from flask import *
 import database
 
 from user import User
-from user import pass_func
 
-from WEBService.src.user import crypt_psw
 
 app = Flask(__name__)
 app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
