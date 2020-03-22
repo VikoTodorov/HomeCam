@@ -4,7 +4,8 @@ import user
 
 class User:
     # first name, last name, email and password
-    def __init__(self, fname, lname, email, psw):
+    def __init__(self, Id, fname, lname, email, psw):
+        self._Id = Id
         self._fname = fname
         self._lname = lname
         self._email = email

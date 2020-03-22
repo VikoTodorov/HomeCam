@@ -33,7 +33,8 @@ def register():
         request.form['email'] != "" and request.form['psw'] != "":
             user = User.find_user(request.form['email'])
             if not user:
-                values = (request.form['fname'],
+                values = (None,
+                          request.form['fname'],
                           request.form['lname'],
                           request.form['email'],
                           request.form['psw'])
