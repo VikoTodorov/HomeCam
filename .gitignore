@@ -1,6 +1,7 @@
 *.log
 *.pyc
 *.db
+*.idea
 __pycache__
 WEBService/connect.py
 env/
