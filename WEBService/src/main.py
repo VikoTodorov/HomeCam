@@ -3,6 +3,7 @@ from flask import *
 import database
 
 from user import User
+from user import pass_func
 
 
 app = Flask(__name__)
@@ -60,7 +61,7 @@ def login():
             if not user:
                 return render_template("/login.html", error="Invalid email or \
                                        password")
-            elif user.getPass() == user.crypt_psw(password):
+            elif user.getPass() == crypt_psw(password):
                 session['email'] = email
                 return render_template('/homepage')
             else:
