@@ -35,4 +35,8 @@ class User:
         if not email:
             return None
         else:
-            return database.extract_user(email)
+            row = database.extract_user(email)
+            if row:
+                return User(*row)
+            else:
+                return False
