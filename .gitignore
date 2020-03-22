@@ -3,5 +3,5 @@
 *.db
 *.idea
 __pycache__
-HomeCam/WEBService/src/database/connect.py
+/database/connect.py
 env/
