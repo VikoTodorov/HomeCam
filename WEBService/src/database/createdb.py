@@ -1,6 +1,6 @@
-import connect
+import database 
 
-conn = connect.connect()
+conn = database.connect()
 
 conn.cursor().execute("CREATE DATABASE IF NOT EXISTS OurDB")
 conn.connect(database="OurDB")

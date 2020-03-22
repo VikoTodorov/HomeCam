@@ -1,5 +1,5 @@
 from flask import Flask
-import createdb
+import database 
 
 app = Flask(__name__)
 
