@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import *
 import database 
 
 app = Flask(__name__)
@@ -17,6 +17,16 @@ def login():
 @app.route('/register')
 def register():
     return render_template('register.html')
+
+
+@app.route('/homepage')
+def homepage():
+    return render_template('homepage.html')
+
+
+@app.route('/logout')
+def logout():
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
