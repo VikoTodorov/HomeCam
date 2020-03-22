@@ -38,8 +38,8 @@ def register():
                           request.form['email'],
                           request.form['psw'])
                 User(*values).create()
-                session[request.form['email']] = values[2]
-                return redirect(url_for('homepage'))
+                #session['email'] = email
+                return redirect(url_for('index'))
             else:
                 return render_template('register.html', error="You can't use \
                                        that email")
@@ -48,13 +48,35 @@ def register():
                                   that email")
 
 
-@app.route('/homepage', endpoint= "homepage")
+@app.route('/checklogin', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    elif request.method == 'POST':
+        if request.form['email'] != "" and request.form['psw'] != "":
+            email = request.form['email']
+            password = request.form['psw']
+            user = User.find_user(email)
+            if not user:
+                return render_template("/login.html", error="Invalid email or \
+                                       password")
+            elif user.getPass() == user.crypt_psw(password):
+                session['email'] = email
+                return render_template('/homepage')
+            else:
+                return render_template("/login.html", error="Invalid email or \
+                                       password")
+        else:
+            return render_template("/login.html", error="Invalid email or \
+                                       password")
+
+
+@app.route('/homepage', endpoint = "homepage")
 def homepage():
-   # if user.getEmail() in session:
-   #     return render_template('homepage.html')
-   # else:
-   #     return redirect(url_for('index'))
-   return render_template('homepage.html')
+    if 'email' in session:
+        return render_template('homepage.html')
+    else:
+        return render_template('index.html')
 
 
 @app.route('/logout')
