@@ -4,6 +4,7 @@ from mysql.connector import Error
 
 def insert_user(values):
     conn = database.connect()
+    conn.connect(database='OurDB')
     try:
         conn.cursor().execute('''INSERT INTO Users(Id, Fname, Lname, Email, Psw)
                               VALUES(NULL, ?, ?, ?, ?);''', values)

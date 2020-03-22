@@ -1,5 +1,6 @@
+from flask import Flask, render_template, request, session, redirect
 from flask import *
-import database 
+import database
 
 from user import User
 
@@ -23,7 +24,7 @@ def return_register():
     return render_template('register.html')
 
 
-@app.route('/register-check', methods = ['GET', 'POST'])
+@app.route('/register-check', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
         return render_template('register.html')
@@ -49,10 +50,11 @@ def register():
 
 @app.route('/homepage', endpoint= "homepage")
 def homepage():
-    if User.getEmail() in session:
-        return render_template('homepage.html')
-    else:
-        return redirect(url_for('index'))
+   # if user.getEmail() in session:
+   #     return render_template('homepage.html')
+   # else:
+   #     return redirect(url_for('index'))
+   return render_template('homepage.html')
 
 
 @app.route('/logout')
@@ -61,4 +63,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run(debug=True)
