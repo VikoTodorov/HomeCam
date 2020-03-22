@@ -30,6 +30,9 @@ class User:
         values = (self._fname, self._lname, self._email, Pass)
         database.insert_user(values)
 
+    def verify_pass(self, password):
+        return self.getPass == user.crypt_psw(password)
+
     @staticmethod
     def find_user(email):
         if not email:

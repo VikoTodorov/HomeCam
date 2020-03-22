@@ -1,4 +1,4 @@
-import database 
+import database
 
 conn = database.connect()
 

@@ -61,7 +61,7 @@ def login():
             if not user:
                 return render_template("/login.html", error="Invalid email or \
                                        password")
-            elif user.getPass() == crypt_psw(password):
+            elif verify_pass(password):
                 session['email'] = email
                 return render_template('/homepage')
             else:

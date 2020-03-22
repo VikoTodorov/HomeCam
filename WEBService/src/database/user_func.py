@@ -17,7 +17,7 @@ def extract_user(email):
     conn = database.connect()
     conn.connect(database="OurDB")
     try:
-        return conn.cursor().execute('SELECT * FROM Users WHERE Email = %s', \
-                                            (email)).fetchone()
+        return conn.cursor().execute('SELECT * FROM Users WHERE Email = %s',\
+                                     (email, )).fetchone()
     except Error as e:
         print(e)
