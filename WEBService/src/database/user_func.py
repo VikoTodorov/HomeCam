@@ -1,7 +1,5 @@
 import database
 
-conn = database.connect()
-
 
 def insert_user(values):
     with database.connect() as conn:
