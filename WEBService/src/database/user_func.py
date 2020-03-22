@@ -6,9 +6,9 @@ def insert_user(values):
     conn = database.connect()
     conn.connect(database='OurDB')
     try:
-        conn.cursor().execute('''INSERT INTO Users(Id, Fname, Lname, Email, Psw)
-                              VALUES(NULL, ?, ?, ?, ?);''', values)
-        conn.cursor().commit()
+        conn.cursor().execute('''INSERT INTO Users(Fname, Lname, Email, Psw)
+                              VALUES(%s, %s, %s, %s);''', values)
+        conn.commit()
     except Error as e:
         print(e)
 
