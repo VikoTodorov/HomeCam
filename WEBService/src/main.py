@@ -5,6 +5,7 @@ from user import User
 
 
 app = Flask(__name__)
+app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
 
 
 @app.route('/', endpoint="index")
@@ -13,11 +14,16 @@ def index():
 
 
 @app.route('/login')
-def login():
+def return_login():
     return render_template('login.html')
 
 
-@app.route('/register', methods = ['GET', 'POST'])
+@app.route('/register')
+def return_register():
+    return render_template('register.html')
+
+
+@app.route('/register-check', methods = ['GET', 'POST'])
 def register():
     if request.method == 'GET':
         return render_template('register.html')
@@ -26,12 +32,12 @@ def register():
         request.form['email'] != "" and request.form['psw'] != "":
             user = User.find_user(request.form['email'])
             if not user:
-                values = (None, request.form['fname'],
+                values = (request.form['fname'],
                           request.form['lname'],
                           request.form['email'],
-                          request.form['password'])
-                user(*values).create()
-                session[request.form['email']] = values[1]
+                          request.form['psw'])
+                User(*values).create()
+                session[request.form['email']] = values[2]
                 return redirect(url_for('homepage'))
             else:
                 return render_template('register.html', error="You can't use \
@@ -43,7 +49,7 @@ def register():
 
 @app.route('/homepage', endpoint= "homepage")
 def homepage():
-    if user.getEmail() in session:
+    if User.getEmail() in session:
         return render_template('homepage.html')
     else:
         return redirect(url_for('index'))

@@ -1,12 +1,16 @@
 import database
+from mysql.connector import Error
 
 
 def insert_user(values):
-    with database.connect() as conn:
-        conn.cursor().execute('''INSERT INTO Users(Fname, Lname, Email, Psw)
-                              VALUES(?, ?, ?, ?);''', values)
+    conn = database.connect()
+    try:
+        conn.cursor().execute('''INSERT INTO Users(Id, Fname, Lname, Email, Psw)
+                              VALUES(NULL, ?, ?, ?, ?);''', values)
         conn.cursor().commit()
+    except Error as e:
+        print(e)
 
 
-def exctract_user(email):
+def extract_user(email):
     pass
