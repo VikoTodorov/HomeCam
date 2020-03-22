@@ -10,6 +10,11 @@ conn.cursor().execute('''CREATE TABLE IF NOT EXISTS Users
                       Email VARCHAR(255),
                       Fname VARCHAR(128),
                       Lname VARCHAR(128),
-                      Psw VARCHAR(255))''')
+                      Psw VARCHAR(255));''')
 
-
+conn.cursor().execute('''CREATE TABLE IF NOT EXISTS Keys
+                      (Id INT NOT NULL,
+                      Key VARCHAR(255),
+                      PRIMARY KEY (Id, Key),
+                      FOREIGN KEY (Id) REFERENCES Users(Id)
+                      ON DELETE CASCADE);''')
