@@ -3,5 +3,5 @@
 *.db
 *.idea
 __pycache__
-WEBService/database/connect.py
+WEBService/src/database/connect.py
 env/
