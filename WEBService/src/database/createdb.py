@@ -15,13 +15,13 @@ def createDB():
                           Email VARCHAR(255),
                           Fname VARCHAR(128),
                           Lname VARCHAR(128),
-                          Psw VARCHAR(255),
-                          Salt INT NOT NULL);''')
+                          Psw VARCHAR(64),
+                          Salt TINYINT NOT NULL);''')
     # ID and Key > primary
     # key the key is referenced to the user which creates it
     conn.cursor().execute('''CREATE TABLE IF NOT EXISTS StreamKeys
                           (Id INT NOT NULL,
-                          Skey VARCHAR(255),
+                          Skey VARCHAR(64),
                           PRIMARY KEY (Id, Skey),
                           FOREIGN KEY (Id) REFERENCES Users(Id)
                           ON DELETE CASCADE);''')
