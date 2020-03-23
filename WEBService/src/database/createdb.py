@@ -1,20 +1,27 @@
-import database
+import database.connect as database
 
-conn = database.connect()
+# CREATE DB IF NOT EXISTS AND ONE TABLE FOR USERS AND ONE TABLE FOR STREAM KEYS
 
-conn.cursor().execute("CREATE DATABASE IF NOT EXISTS OurDB")
-conn.connect(database="OurDB")
 
-conn.cursor().execute('''CREATE TABLE IF NOT EXISTS Users
-                      (Id INT AUTO_INCREMENT PRIMARY KEY,
-                      Email VARCHAR(255),
-                      Fname VARCHAR(128),
-                      Lname VARCHAR(128),
-                      Psw VARCHAR(255));''')
+def createDB():
+    conn = database.connect_to_DB()
 
-conn.cursor().execute('''CREATE TABLE IF NOT EXISTS StreamKeys
-                      (Id INT NOT NULL,
-                      Skey VARCHAR(255),
-                      PRIMARY KEY (Id, Skey),
-                      FOREIGN KEY (Id) REFERENCES Users(Id)
-                      ON DELETE CASCADE);''')
+    conn.cursor().execute("CREATE DATABASE IF NOT EXISTS OurDB")
+    conn.connect(database="OurDB")
+    # ID -> Primary key, Email, Pass, First and Last Name and Salt(needet in
+    # crypt algorithm
+    conn.cursor().execute('''CREATE TABLE IF NOT EXISTS Users
+                          (Id INT AUTO_INCREMENT PRIMARY KEY,
+                          Email VARCHAR(255),
+                          Fname VARCHAR(128),
+                          Lname VARCHAR(128),
+                          Psw VARCHAR(255),
+                          Salt INT NOT NULL);''')
+    # ID and Key > primary
+    # key the key is referenced to the user which creates it
+    conn.cursor().execute('''CREATE TABLE IF NOT EXISTS StreamKeys
+                          (Id INT NOT NULL,
+                          Skey VARCHAR(255),
+                          PRIMARY KEY (Id, Skey),
+                          FOREIGN KEY (Id) REFERENCES Users(Id)
+                          ON DELETE CASCADE);''')

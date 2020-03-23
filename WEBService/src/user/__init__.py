@@ -1,2 +1,1 @@
-from .pass_func import *
-from .user import *
+from user.user import User

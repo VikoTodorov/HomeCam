@@ -1,15 +1,17 @@
-import database
-import user
+from database import user_func as database
+from user import pass_func
 
 
 class User:
-    # first name, last name, email and password
-    def __init__(self, Id, fname, lname, email, psw):
+    # first name, last name, email and password and secret key
+    # all are protected variables
+    def __init__(self, Id, fname, lname, email, psw, salt=None):
         self._Id = Id
         self._fname = fname
         self._lname = lname
         self._email = email
         self._psw = psw
+        self._salt = salt
 
     def getFname(self):
         return self._fname
@@ -27,12 +29,13 @@ class User:
         return self._psw
 
     def create(self):
-        Pass = user.crypt_psw(self._psw)
-        values = (self._fname, self._lname, self._email, Pass)
+        salt = pass_func.generate_salt(self._psw)
+        Pass = pass_func.crypt_psw(self._psw, salt)
+        values = (self._fname, self._lname, self._email, Pass, salt)
         database.insert_user(values)
 
     def verify_pass(self, password):
-        return self.getPass() == user.crypt_psw(password)
+        return self.getPass() == pass_func.crypt_psw(password, self._salt)
 
     @staticmethod
     def find_user(email):

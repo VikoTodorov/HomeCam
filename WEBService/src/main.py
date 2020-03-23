@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, session, redirect
-from flask import *
-import database
+from flask import Flask
+from flask import render_template, request, redirect, url_for
+from flask import session
 
+import database.createdb as database
 from user import User
+
+database.createDB()
 
 
 app = Flask(__name__)
@@ -28,9 +31,11 @@ def return_register():
 def register():
     if request.method == 'GET':
         return render_template('register.html')
+
     elif request.method == 'POST':
         if request.form['fname'] != "" and request.form['lname'] != "" and \
-        request.form['email'] != "" and request.form['psw'] != "":
+                request.form['email'] != "" and request.form['psw'] != "":
+
             user = User.find_user(request.form['email'])
             if not user:
                 values = (None,
@@ -42,6 +47,7 @@ def register():
                 email = request.form['email']
                 session['email'] = email
                 return redirect(url_for('homepage'))
+
             else:
                 return render_template('register.html', error="You can't use \
                                        that email")
@@ -73,7 +79,7 @@ def login():
                                        password")
 
 
-@app.route('/homepage', endpoint = "homepage")
+@app.route('/homepage', endpoint="homepage")
 def homepage():
     if 'email' in session:
         return render_template('homepage.html')
