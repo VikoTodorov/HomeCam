@@ -1,3 +1,5 @@
+import functools
+
 from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import session
@@ -14,23 +16,15 @@ app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
 
 @app.route('/', endpoint="index")
 def index():
-    return render_template('index.html')
+    if 'email' in session:
+        return redirect(url_for('homepage'))
+    return render_template('app/index.html')
 
 
-@app.route('/login')
-def return_login():
-    return render_template('login.html')
-
-
-@app.route('/register')
-def return_register():
-    return render_template('register.html')
-
-
-@app.route('/register-check', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'], endpoint="register")
 def register():
     if request.method == 'GET':
-        return render_template('register.html')
+        return render_template('auth/register.html')
 
     elif request.method == 'POST':
         if request.form['fname'] != "" and request.form['lname'] != "" and \
@@ -49,47 +43,57 @@ def register():
                 return redirect(url_for('homepage'))
 
             else:
-                return render_template('register.html', error="You can't use \
+                return render_template('auth/register.html', error="You can't use \
                                        that email")
         else:
-            return render_template('register.html', error="You can't use \
+            return render_template('auth/register.html', error="You can't use \
                                   that email")
 
 
-@app.route('/checklogin', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'], endpoint="login")
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('auth/login.html')
+
     elif request.method == 'POST':
         if request.form['email'] != "" and request.form['psw'] != "":
             email = request.form['email']
             password = request.form['psw']
             user = User.find_user(email)
             if not user:
-                return render_template("/login.html", error="Invalid email or \
+                return render_template("auth/login.html", error="Invalid email or \
                                        password")
             elif user.verify_pass(password):
                 session['email'] = email
                 return redirect(url_for('homepage'))
             else:
-                return render_template("/login.html", error="Invalid email or \
+                return render_template("auth/login.html", error="Invalid email or \
                                        password")
         else:
-            return render_template("/login.html", error="Invalid email or \
+            return render_template("auth/login.html", error="Invalid email or \
                                        password")
+
+
+def login_required(fun):
+   #  @functools.wraps(fun)
+    def wrapped_fun(**kwargs):
+        if 'email' not in session:
+            return redirect(url_for('login'))
+        return fun(**kwargs)
+    return wrapped_fun
 
 
 @app.route('/homepage', endpoint="homepage")
+@login_required
 def homepage():
-    if 'email' in session:
-        return render_template('homepage.html')
-    else:
-        return render_template('index.html')
+    return render_template('app/homepage.html')
 
 
 @app.route('/logout')
 def logout():
-    return render_template('index.html')
+    if 'email' in session:
+        session.pop('email')
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
