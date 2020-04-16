@@ -14,6 +14,8 @@ def insert_user(values):
     except Error as e:
         print(e)
 
+    finally:
+        conn.close()
 
 def extract_user(email):
     conn = database.connect_to_DB()
@@ -28,3 +30,5 @@ def extract_user(email):
         # return conn.cursor().fetchone()
     except Error as e:
         print(e)
+    finally:
+        conn.close()

@@ -25,3 +25,4 @@ def createDB():
                           PRIMARY KEY (Id, Skey),
                           FOREIGN KEY (Id) REFERENCES Users(Id)
                           ON DELETE CASCADE);''')
+    conn.close()

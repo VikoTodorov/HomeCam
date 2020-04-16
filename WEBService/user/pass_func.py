@@ -3,7 +3,8 @@ import random
 
 
 def crypt_psw(psw, salt):
-    our_plus = str([i for i in psw if psw.index(i) % salt == 0])
+    our_plus = [i for i in psw if psw.index(i) % salt == 0]
+    our_plus = ''.join(our_plus)
     psw = psw + our_plus
     return hashlib.sha256(psw.encode('utf-8')).hexdigest()
 
