@@ -3,5 +3,5 @@
 *.db
 *.idea
 __pycache__
-/database/connect.py
 env/
+Test.db

@@ -1,34 +1,24 @@
 import unittest
-import mysql.connector
-from mysql.connector import Error
 
 import flask
 
 import main
 from user import pass_func
+from database import connect as database
 
 
 class TestLogin(unittest.TestCase):
     def setUp(self):
         main.app.testing = True
         self.app = main.app.test_client()
-        try:
-            conn = mysql.connector.connect(host='127.0.0.1',
-                                           user='root',
-                                           password='',
-                                           database='Test')
-        except Error as e:
-            print(e)
+        conn = database.connect_to_DB()
         try:
             sql = '''INSERT INTO Users(Fname, Lname, Email, Psw, Salt)
-          VALUES(%s, %s, %s, %s, %s);'''
+      VALUES(?, ?, ?, ?, ?);'''
             psw = pass_func.crypt_psw('test', 2)
             values = ('test', 'test', 'test@test', psw, 2)
             conn.cursor().execute(sql, values)
             conn.commit()
-        except Error as e:
-            print(e)
-
         finally:
             conn.close()
 
@@ -58,15 +48,11 @@ class TestLogin(unittest.TestCase):
             self.assertEqual(flask.session['email'], 'test@test')
 
     def tearDown(self):
-        conn = connect.connect_to_DB()
-        conn.connect(database='OurDB')
+        conn = database.connect_to_DB()
         try:
             sql = "DELETE FROM Users WHERE Email = 'test@test'"
             conn.cursor().execute(sql)
             conn.commit()
-        except Error as e:
-            print(e)
-
         finally:
             conn.close()
 

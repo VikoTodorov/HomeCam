@@ -4,15 +4,7 @@ import database.connect as database
 
 
 def createDB(test_on=False):
-    if (test_on == False):
-        conn = database.connect_to_DB()
-
-        conn.cursor().execute("CREATE DATABASE IF NOT EXISTS OurDB")
-        conn.connect(database="OurDB")
-    else:
-        conn = database.connect_to_TestDB()
-        conn.cursor().execute("CREATE DATABASE IF NOT EXISTS Test")
-        conn.connect(database="Test")
+    conn = database.connect_to_DB()
     # ID -> Primary key, Email, Pass, First and Last Name and Salt(needet in
     # crypt algorithm
     conn.cursor().execute('''CREATE TABLE IF NOT EXISTS Users

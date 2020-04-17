@@ -2,7 +2,7 @@ from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import session
 
-# import database.createdb as database
+import database.createdb as database
 from user import User
 
 
@@ -93,5 +93,5 @@ def logout():
 
 
 if __name__ == '__main__':
-    #    database.createDB()
+    database.createDB()
     app.run(debug=True)
