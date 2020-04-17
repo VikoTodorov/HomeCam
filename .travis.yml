@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+install:
+  - pip install -r requirments.txt
+script:
+  - cd WEBService/
+  - python -m unittest discover -s tests
