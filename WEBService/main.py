@@ -41,9 +41,18 @@ def register():
             else:
                 return render_template('auth/register.html', error="You can't use \
                                        that email")
-        else:
-            return render_template('auth/register.html', error="You can't use \
-                                  that email")
+        elif request.form['fname'] == "":
+            return render_template('auth/register.html', error="First name\
+                                  is required")
+        elif request.form['lname'] == "":
+            return render_template('auth/register.html', error="Last name\
+                                  is required")
+        elif request.form['email'] == "":
+            return render_template('auth/register.html', error="Email\
+                                  is required")
+        elif request.form['psw'] == "":
+            return render_template('auth/register.html', error="Password\
+                                  is required")
 
 
 @app.route('/login', methods=['GET', 'POST'], endpoint="login")

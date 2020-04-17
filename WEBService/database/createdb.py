@@ -8,16 +8,16 @@ def createDB(test_on=False):
     # ID -> Primary key, Email, Pass, First and Last Name and Salt(needet in
     # crypt algorithm
     conn.cursor().execute('''CREATE TABLE IF NOT EXISTS Users
-                          (Id INT AUTO_INCREMENT PRIMARY KEY,
-                          Email VARCHAR(255),
+                          (Id INTEGER PRIMARY KEY AUTOINCREMENT,
                           Fname VARCHAR(128),
                           Lname VARCHAR(128),
+                          Email VARCHAR(255),
                           Psw VARCHAR(64),
                           Salt TINYINT NOT NULL);''')
     # ID and Key > primary
     # key the key is referenced to the user which creates it
     conn.cursor().execute('''CREATE TABLE IF NOT EXISTS StreamKeys
-                          (Id INT NOT NULL,
+                          (Id INTEGER NOT NULL,
                           Skey VARCHAR(64),
                           PRIMARY KEY (Id, Skey),
                           FOREIGN KEY (Id) REFERENCES Users(Id)
