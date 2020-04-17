@@ -1,12 +1,12 @@
-import sys
 import unittest
 from mysql.connector import Error
 
 import flask
 
-sys.path.append('..')
+# sys.path.append('..')
+
 import main
-from user import User, pass_func
+from user import pass_func
 from database import connect
 
 

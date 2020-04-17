@@ -1,9 +1,7 @@
-import sys
 import unittest
 
 import flask
 
-sys.path.append('..')
 import main
 
 

@@ -1,8 +1,6 @@
 import unittest
 import hashlib
-import sys
 
-sys.path.append("..")
 from user import pass_func
 
 class TestHash(unittest.TestCase):
