@@ -5,13 +5,14 @@ import flask
 import main
 from user import pass_func
 from database import connect as database
-from database import createdb as DB 
+from database import createdb as DB
 
 
 class TestLogin(unittest.TestCase):
     def setUp(self):
         main.app.testing = True
         self.app = main.app.test_client()
+
         DB.createDB()
         conn = database.connect_to_DB()
         try:
