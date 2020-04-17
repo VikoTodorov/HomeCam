@@ -1,13 +1,9 @@
-import functools
-
 from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import session
 
-import database.createdb as database
+# import database.createdb as database
 from user import User
-
-database.createDB()
 
 
 app = Flask(__name__)
@@ -75,7 +71,7 @@ def login():
 
 
 def login_required(fun):
-   #  @functools.wraps(fun)
+    #  @functools.wraps(fun)
     def wrapped_fun(**kwargs):
         if 'email' not in session:
             return redirect(url_for('login'))
@@ -97,4 +93,5 @@ def logout():
 
 
 if __name__ == '__main__':
+    #    database.createDB()
     app.run(debug=True)

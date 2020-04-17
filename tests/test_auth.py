@@ -1,21 +1,24 @@
 import unittest
+import mysql.connector
 from mysql.connector import Error
 
 import flask
 
-# sys.path.append('..')
-
 import main
 from user import pass_func
-from database import connect
 
 
 class TestLogin(unittest.TestCase):
     def setUp(self):
         main.app.testing = True
         self.app = main.app.test_client()
-        conn = connect.connect_to_DB()
-        conn.connect(database='OurDB')
+        try:
+            conn = mysql.connector.connect(host='127.0.0.1',
+                                           user='root',
+                                           password='',
+                                           database='Test')
+        except Error as e:
+            print(e)
         try:
             sql = '''INSERT INTO Users(Fname, Lname, Email, Psw, Salt)
           VALUES(%s, %s, %s, %s, %s);'''
