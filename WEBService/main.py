@@ -2,8 +2,8 @@ from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import session
 
-import database.createdb as database
 from user import User
+import database.createdb as database
 
 
 app = Flask(__name__)

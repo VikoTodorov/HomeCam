@@ -1,1 +1,1 @@
-web: gunicorn WEBService.main
+web: gunicorn WEBService.main:app 
