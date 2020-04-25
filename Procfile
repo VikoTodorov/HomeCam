@@ -1,1 +1,1 @@
-web: python WEBService/main.py 
+web: gunicorn --pythonpath WEBService main:app

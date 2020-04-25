@@ -19,6 +19,7 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'], endpoint="register")
 def register():
+    database.createDB()
     if request.method == 'GET':
         return render_template('auth/register.html')
 
@@ -57,6 +58,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'], endpoint="login")
 def login():
+    database.createDB()
     if request.method == 'GET':
         return render_template('auth/login.html')
 
