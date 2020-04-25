@@ -1,0 +1,4 @@
+from WEBService import main
+
+if __name__ == "__main__":
+    main.app.run()
