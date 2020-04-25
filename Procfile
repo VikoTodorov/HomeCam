@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath WEBService main:app --log-file=-
+web: python WEBService/main.py 
