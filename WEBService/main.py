@@ -1,13 +1,70 @@
+from HomeCam.WEBService.singlemotiondetector import SingleMotionDetector
 from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import session
+from flask import Response
 
 from user import User
 import database.createdb as database
 
+from imutils.video import VideoStream
+import datetime
+import imutils
+import time
+import cv2
+import argparse
+import threading
+
+outputFrame = None
+lock = threading.Lock()
+
+vs = VideoStream(src=0).start()
+time.sleep(2.0)
 
 app = Flask(__name__)
 app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
+
+
+def detect_motion(frameCount):
+    global vs, outputFrame, lock
+
+    md = SingleMotionDetector(accumWeight=0.1)
+    total = 0
+
+    while True:
+        frame = vs.read()
+        frame = imutils.resize(frame, width=400)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray, (7, 7), 0)
+        timestamp = datetime.datetime.now()
+        cv2.putText(frame, timestamp.strftime(
+            "%A %d %B %Y %I:%M:%S%p"), (10, frame.shape[0] - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+
+        if total > frameCount:
+            motion = md.detect(gray)
+            if motion is not None:
+                (thresh, (minX, minY, maxX, maxY)) = motion
+                cv2.rectangle(frame, (minX, minY), (maxX, maxY),
+                              (0, 0, 255), 2)
+
+        md.update(gray)
+        total += 1
+        with lock:
+            outputFrame = frame.copy()
+
+
+def generate():
+    global outputFrame, lock
+    while True:
+        with lock:
+            if outputFrame is None:
+                continue
+            (flag, encodedImage) = cv2.imencode(".jpg", outputFrame)
+            if not flag:
+                continue
+        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+               bytearray(encodedImage) + b'\r\n')
 
 
 @app.route('/', endpoint="index")
@@ -87,6 +144,7 @@ def login_required(fun):
         if 'email' not in session:
             return redirect(url_for('login'))
         return fun(**kwargs)
+
     return wrapped_fun
 
 
@@ -103,6 +161,28 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route("/video_feed")
+def video_feed():
+    return Response(generate(),
+                    mimetype="multipart/x-mixed-replace; boundary=frame")
+
+
 if __name__ == '__main__':
     database.createDB()
-    app.run(debug=True)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-i", "--ip", type=str,
+                    help="ip address of the device")
+    ap.add_argument("-o", "--port", type=int,
+                    help="ephemeral port number of the server (1024 to 65535)")
+    ap.add_argument("-f", "--frame-count", type=int, default=32,
+                    help="# of frames used to construct the background model")
+    args = vars(ap.parse_args())
+    t = threading.Thread(target=detect_motion, args=(
+        args["frame_count"],))
+    t.daemon = True
+    t.start()
+
+    app.run(host=args["ip"], port=args["port"], debug=True,
+            threaded=True, use_reloader=False)
+
+vs.stop()
