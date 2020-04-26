@@ -25,27 +25,27 @@ def getFrame(sock):
 
 # print(payload_size)
     sock.setblocking(0)
-while True:
-    try:
-        ready_to_read, ready_to_write, in_error = \
-                select.select([conn,], [conn,], [], 5)
-    except select.error:
-        conn.shutdown(0)
-        conn.close()
-    if len(ready_to_read) > 0:
-        while len(data) < payload_size:
-            data += conn.recv(4096)
-        packed_msg_size = data[:payload_size]
-        # print(packed_msg_size)
+    while True:
+        try:
+            ready_to_read, ready_to_write, in_error = \
+                    select.select([conn,], [conn,], [], 5)
+        except select.error:
+            conn.shutdown(0)
+            conn.close()
+        if len(ready_to_read) > 0:
+            while len(data) < payload_size:
+                data += conn.recv(4096)
+            packed_msg_size = data[:payload_size]
+            # print(packed_msg_size)
 
-        data = data[payload_size:]
-        msg_size = struct.unpack("L", packed_msg_size)[0]
-        # print(msg_size)
+            data = data[payload_size:]
+            msg_size = struct.unpack("L", packed_msg_size)[0]
+            # print(msg_size)
 
-        while len(data) < msg_size:
-            data += conn.recv(4096)
-        frame_data = data[:msg_size]
-        data = data[msg_size:]
+            while len(data) < msg_size:
+                data += conn.recv(4096)
+            frame_data = data[:msg_size]
+            data = data[msg_size:]
 
-        frame=pickle.loads(frame_data)
-        return frame
+            frame=pickle.loads(frame_data)
+            return frame
