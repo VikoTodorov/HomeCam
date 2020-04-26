@@ -5,7 +5,7 @@ import sys
 import pickle
 import struct
 
-host = socket.gethostname()
+host = 'https://home-cam.herokuapp.com/' 
 port = 8083
 
 cap = cv2.VideoCapture(0)

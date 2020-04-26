@@ -1,4 +1,12 @@
-from HomeCam.WEBService.singlemotiondetector import SingleMotionDetector
+import time
+import datetime
+
+from imutils.video import VideoStream
+import imutils
+import cv2
+import argparse
+import threading
+
 from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import session
@@ -7,32 +15,23 @@ from flask import Response
 from user import User
 import database.createdb as database
 
-from imutils.video import VideoStream
-import datetime
-import imutils
-import time
-import cv2
-import argparse
-import threading
+from HomeCam.WEBService.singlemotiondetector import SingleMotionDetector
 
 outputFrame = None
 lock = threading.Lock()
-
-vs = VideoStream(src=0).start()
-time.sleep(2.0)
 
 app = Flask(__name__)
 app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
 
 
 def detect_motion(frameCount):
-    global vs, outputFrame, lock
+    global outputFrame, lock
 
     md = SingleMotionDetector(accumWeight=0.1)
     total = 0
-
+    sock = create_socket()
     while True:
-        frame = vs.read()
+        frame = socket_fun.getFrame(sock) 
         frame = imutils.resize(frame, width=400)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (7, 7), 0)
@@ -184,5 +183,3 @@ if __name__ == '__main__':
 
     app.run(host=args["ip"], port=args["port"], debug=True,
             threaded=True, use_reloader=False)
-
-vs.stop()
