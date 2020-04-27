@@ -1,13 +1,9 @@
 language: python
 python:
   - "3.6"
-  - "3.7"
-  - "3.8"
 services: 
-  - mysql
-before_install:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS Test;'
+  - sqlite3 
 install:
   - pip install -r requirements.txt
 script:
-  - python -m unittest discover -s tests
+  - python -m unittest discover -s tests -t WEBService

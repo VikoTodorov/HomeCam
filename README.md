@@ -1,4 +1,5 @@
 # HomeCam project ... to be edited #
+[![Build Status](https://travis-ci.org/VikoTodorov/HomeCam.svg?branch=develop)](https://travis-ci.org/VikoTodorov/HomeCam)
 
 # To install requirments #
 * Install virtualenv with pip: $ pip3 install virtualenv

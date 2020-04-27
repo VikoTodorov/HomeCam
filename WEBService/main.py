@@ -1,10 +1,16 @@
+import argparse
+import threading
+
 from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import session
+from flask import Response
 
-# import database.createdb as database
 from user import User
-
+import database.createdb as database
+from stream import generate, detect_motion
+# outputFrame = None
+# lock = threading.Lock()
 
 app = Flask(__name__)
 app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
@@ -19,6 +25,7 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'], endpoint="register")
 def register():
+    database.createDB()
     if request.method == 'GET':
         return render_template('auth/register.html')
 
@@ -41,13 +48,23 @@ def register():
             else:
                 return render_template('auth/register.html', error="You can't use \
                                        that email")
-        else:
-            return render_template('auth/register.html', error="You can't use \
-                                  that email")
+        elif request.form['fname'] == "":
+            return render_template('auth/register.html', error="First name\
+                                  is required")
+        elif request.form['lname'] == "":
+            return render_template('auth/register.html', error="Last name\
+                                  is required")
+        elif request.form['email'] == "":
+            return render_template('auth/register.html', error="Email\
+                                  is required")
+        elif request.form['psw'] == "":
+            return render_template('auth/register.html', error="Password\
+                                  is required")
 
 
 @app.route('/login', methods=['GET', 'POST'], endpoint="login")
 def login():
+    database.createDB()
     if request.method == 'GET':
         return render_template('auth/login.html')
 
@@ -76,6 +93,7 @@ def login_required(fun):
         if 'email' not in session:
             return redirect(url_for('login'))
         return fun(**kwargs)
+
     return wrapped_fun
 
 
@@ -92,6 +110,26 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route("/video_feed")
+def video_feed():
+    return Response(generate(),
+                    mimetype="multipart/x-mixed-replace; boundary=frame")
+
+
 if __name__ == '__main__':
-    #    database.createDB()
-    app.run(debug=True)
+    database.createDB()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-i", "--ip", type=str,
+                    help="ip address of the device")
+    ap.add_argument("-o", "--port", type=int,
+                    help="ephemeral port number of the server (1024 to 65535)")
+    ap.add_argument("-f", "--frame-count", type=int, default=32,
+                    help="# of frames used to construct the background model")
+    args = vars(ap.parse_args())
+    t = threading.Thread(target=detect_motion, args=(
+        args["frame_count"],))
+    t.daemon = True
+    t.start()
+
+    app.run(host=args["ip"], port=args["port"], debug=True,
+            threaded=True, use_reloader=False)
