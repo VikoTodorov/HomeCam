@@ -6,6 +6,7 @@ import pickle
 import numpy as np
 import struct
 
+
 def decrypt(conn, data):
     keys_size = struct.calcsize('LL')
     #data = b''

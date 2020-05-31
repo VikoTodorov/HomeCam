@@ -6,16 +6,22 @@ from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import session
 from flask import Response
+from flask_mail import Mail
 
 from user import User
 import database.createdb as database
 import socket_fun
 import cv2 as cv
-#from stream import generate, detect_motion
-# outputFrame = None
-# lock = threading.Lock()
+
+from WEBService.stream import detect_motion, set_flag
 
 app = Flask(__name__)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'donev.konstantin@gmail.com'
+app.config['MAIL_PASSWORD'] = 'oodsgwocbkbokoif'
+mail = Mail(app)
 app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
 
 lock = threading.Lock()
@@ -26,6 +32,8 @@ port = 9999
 sock.bind((host,port))
 sock.listen(5)
 sock.setblocking(0)
+
+
 @app.route('/', endpoint="index")
 def index():
     if 'email' in session:
@@ -107,7 +115,7 @@ def login_required(fun):
     return wrapped_fun
 
 
-@app.route('/homepage', endpoint="homepage")
+@app.route('/homepage', methods=['GET', 'POST'], endpoint="homepage")
 @login_required
 def homepage():
 #    try:
@@ -119,7 +127,20 @@ def homepage():
 
 #        connect, addr = sock.accept()
 #        globals()['conn'] = connect
+    if request.method == 'POST':
+        set_flag(False)
+        return render_template("app/no_mov_expected.html")
+    else:
         return render_template('app/homepage.html')
+
+
+@app.route("/no_mov_exp", methods=['GET', 'POST'], endpoint="no_mov_exp")
+def no_mov():
+    if request.method == 'POST':
+        set_flag(True)
+        return render_template("app/homepage.html")
+    else:
+        return render_template("app/no_mov_expected.html")
 
 
 @app.route('/logout')
@@ -128,17 +149,18 @@ def logout():
         session.pop('email')
     return redirect(url_for('index'))
 
+
 def generate():
     try:
         connect, addr = sock.accept()
         data = b''
         while True:
             frame, key, data = socket_fun.decrypt(connect, data) 
-            frame = cv.resize(frame, (0,0), fx=0.5, fy=0.5)
+            frame = cv.resize(frame, (0,0), fx=0.7, fy=0.7)
             img = cv.imencode('.jpg', frame)[1].tobytes()
             yield (b'--frame\r\n'b'Content-Type:image/jpeg\r\n\r\n'+img+b'\r\n')
     except BlockingIOError:
-        return 'hello' 
+        return 'hello'
 
 
 @app.route("/video_feed")
@@ -146,21 +168,11 @@ def video_feed():
     return Response(generate(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
 if __name__ == '__main__':
     database.createDB()
-    app.run(host='0.0.0.0')
-#    ap = argparse.ArgumentParser()
-#    ap.add_argument("-i", "--ip", type=str,
-#                    help="ip address of the device")
-#    ap.add_argument("-o", "--port", type=int,
-#                    help="ephemeral port number of the server (1024 to 65535)")
-#    ap.add_argument("-f", "--frame-count", type=int, default=32,
-#                    help="# of frames used to construct the background model")
-#    args = vars(ap.parse_args())
-#    t = threading.Thread(target=detect_motion, args=(
-#        args["frame_count"],))
-#    t.daemon = True
-#    t.start()
+    t = threading.Thread(target=detect_motion, args=(32, , mail, app))
+    t.daemon = True
+    t.start()
+    app.run(host='127.0.0.1', debug=True, threaded=True, use_reloader=False)
 
-#    app.run(host=args["ip"], port=args["port"], debug=True,
-#            threaded=True, use_reloader=False)

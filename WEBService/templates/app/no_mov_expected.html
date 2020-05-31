@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block body %}
+<div id="log_out">
+  <a href="/logout">Log out</a>
+</div>
+<br>
+<h1>Welcome, here you don't expect movement!</h1>
+<h3>We'll send you an email if there is sth fishy here.</h3>
+<img src="{{ url_for('video_feed') }}">
+    <form action="/no_mov_exp" method="post">
+      <input type="submit" value="Expect movement">
+    </form>
+{%endblock%}

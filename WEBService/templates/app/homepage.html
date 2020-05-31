@@ -7,4 +7,7 @@
 <h1>Welcome to the main page!</h1>
 <h3>Here you can watch your cameras.</h3>
 <img src="{{ url_for('video_feed') }}">
+    <form action="/homepage" method="post">
+      <input type="submit" value="Don't expect movement">
+    </form>
 {%endblock%}
