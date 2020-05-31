@@ -18,6 +18,7 @@ import cv2 as cv
 app = Flask(__name__)
 app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
 
+lock = threading.Lock()
 sock = socket.socket()
 host = socket.gethostname()
 port = 9999
@@ -109,13 +110,16 @@ def login_required(fun):
 @app.route('/homepage', endpoint="homepage")
 @login_required
 def homepage():
-    try:
-        connect, addr = sock.accept()
-        globals()['conn'] = connect
-        return render_template('app/homepage.html', flag = True)
-    except BlockingIOError:
-        return render_template('app/homepage.html', flag = False)
+#    try:
+#        connect, addr = sock.accept()
+#        globals()['conn'] = connect
+#        return render_template('app/homepage.html', flag = True)
+#    except BlockingIOError:
+#        return render_template('app/homepage.html', flag = False)
 
+#        connect, addr = sock.accept()
+#        globals()['conn'] = connect
+        return render_template('app/homepage.html')
 
 
 @app.route('/logout')
@@ -125,16 +129,21 @@ def logout():
     return redirect(url_for('index'))
 
 def generate():
-    frame, key = socket_fun.decrypt(conn) 
-    frame = cv.resize(frame, (0,0), fx=1.0, fy=1.0)
-    frame = cv.imencode('.jpg', frame)[1].tobytes()
-    yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    try:
+        connect, addr = sock.accept()
+        while True:
+            frame, key = socket_fun.decrypt(connect) 
+            frame = cv.resize(frame, (0,0), fx=1.0, fy=1.0)
+            img = cv.imencode('.jpg', frame)[1].tobytes()
+            yield (b'--frame\r\n'b'Content-Type:image/jpeg\r\n\r\n'+img+b'\r\n')
+    except BlockingIOError:
+        return 'hello' 
+
 
 @app.route("/video_feed")
 def video_feed():
     return Response(generate(),
                     mimetype="multipart/x-mixed-replace; boundary=frame")
-
 
 if __name__ == '__main__':
     database.createDB()
