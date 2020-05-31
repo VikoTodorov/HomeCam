@@ -131,9 +131,10 @@ def logout():
 def generate():
     try:
         connect, addr = sock.accept()
+        data = b''
         while True:
-            frame, key = socket_fun.decrypt(connect) 
-            frame = cv.resize(frame, (0,0), fx=1.0, fy=1.0)
+            frame, key, data = socket_fun.decrypt(connect, data) 
+            frame = cv.resize(frame, (0,0), fx=0.5, fy=0.5)
             img = cv.imencode('.jpg', frame)[1].tobytes()
             yield (b'--frame\r\n'b'Content-Type:image/jpeg\r\n\r\n'+img+b'\r\n')
     except BlockingIOError:
@@ -143,7 +144,7 @@ def generate():
 @app.route("/video_feed")
 def video_feed():
     return Response(generate(),
-                    mimetype="multipart/x-mixed-replace; boundary=frame")
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     database.createDB()
