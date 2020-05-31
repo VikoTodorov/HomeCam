@@ -14,17 +14,16 @@ def create_socket():
 
     sock.bind((host, port))
     sock.listen(10)
-    return sock
-
-def getFrame(sock):
-
     conn, addr = sock.accept()
+    return sock, conn, addr
+
+def getFrame(sock, conn):
 
     data = b''
     payload_size = struct.calcsize("L")
 
 # print(payload_size)
-    sock.setblocking(0)
+#    sock.setblocking(0)
     while True:
         try:
             ready_to_read, ready_to_write, in_error = \
@@ -49,3 +48,21 @@ def getFrame(sock):
 
             frame=pickle.loads(frame_data)
             return frame
+
+def decrypt(conn):
+    keys_size = struct.calcsize('LL')
+    data = b''
+    while True:
+        while len(data) < keys_size:
+            data += conn.recv(4096)
+        info = data[:keys_size]
+        data = data[keys_size:]
+        frame_size = struct.unpack('LL', info)[0]
+        key_size = struct.unpack('LL', info)[1]
+        while len(data) < frame_size+key_size:
+            data += conn.recv(4096)
+        frame_data = data[:frame_size]
+        key_data = data[frame_size:]
+        frame = pickle.loads(frame_data)
+        key = pickle.loads(key_data)
+        return frame, key

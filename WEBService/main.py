@@ -1,4 +1,5 @@
 import argparse
+import socket
 import threading
 
 from flask import Flask
@@ -8,14 +9,22 @@ from flask import Response
 
 from user import User
 import database.createdb as database
-from stream import generate, detect_motion
+import socket_fun
+import cv2 as cv
+#from stream import generate, detect_motion
 # outputFrame = None
 # lock = threading.Lock()
 
 app = Flask(__name__)
 app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
 
+sock = socket.socket()
+host = socket.gethostname()
+port = 9999
 
+sock.bind((host,port))
+sock.listen(5)
+sock.setblocking(0)
 @app.route('/', endpoint="index")
 def index():
     if 'email' in session:
@@ -100,7 +109,13 @@ def login_required(fun):
 @app.route('/homepage', endpoint="homepage")
 @login_required
 def homepage():
-    return render_template('app/homepage.html')
+    try:
+        connect, addr = sock.accept()
+        globals()['conn'] = connect
+        return render_template('app/homepage.html', flag = True)
+    except BlockingIOError:
+        return render_template('app/homepage.html', flag = False)
+
 
 
 @app.route('/logout')
@@ -109,6 +124,11 @@ def logout():
         session.pop('email')
     return redirect(url_for('index'))
 
+def generate():
+    frame, key = socket_fun.decrypt(conn) 
+    frame = cv.resize(frame, (0,0), fx=1.0, fy=1.0)
+    frame = cv.imencode('.jpg', frame)[1].tobytes()
+    yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 @app.route("/video_feed")
 def video_feed():
@@ -118,18 +138,19 @@ def video_feed():
 
 if __name__ == '__main__':
     database.createDB()
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--ip", type=str,
-                    help="ip address of the device")
-    ap.add_argument("-o", "--port", type=int,
-                    help="ephemeral port number of the server (1024 to 65535)")
-    ap.add_argument("-f", "--frame-count", type=int, default=32,
-                    help="# of frames used to construct the background model")
-    args = vars(ap.parse_args())
-    t = threading.Thread(target=detect_motion, args=(
-        args["frame_count"],))
-    t.daemon = True
-    t.start()
+    app.run(host='0.0.0.0')
+#    ap = argparse.ArgumentParser()
+#    ap.add_argument("-i", "--ip", type=str,
+#                    help="ip address of the device")
+#    ap.add_argument("-o", "--port", type=int,
+#                    help="ephemeral port number of the server (1024 to 65535)")
+#    ap.add_argument("-f", "--frame-count", type=int, default=32,
+#                    help="# of frames used to construct the background model")
+#    args = vars(ap.parse_args())
+#    t = threading.Thread(target=detect_motion, args=(
+#        args["frame_count"],))
+#    t.daemon = True
+#    t.start()
 
-    app.run(host=args["ip"], port=args["port"], debug=True,
-            threaded=True, use_reloader=False)
+#    app.run(host=args["ip"], port=args["port"], debug=True,
+#            threaded=True, use_reloader=False)

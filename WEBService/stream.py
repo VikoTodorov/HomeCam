@@ -17,9 +17,9 @@ def detect_motion(frameCount):
 
     md = SingleMotionDetector(accumWeight=0.1)
     total = 0
-    sock = socket_fun.create_socket()
+    sock, conn, addr = socket_fun.create_socket()
     while True:
-        frame = socket_fun.getFrame(sock)
+        frame = socket_fun.getFrame(sock, conn)
         frame = imutils.resize(frame, width=400)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (7, 7), 0)
