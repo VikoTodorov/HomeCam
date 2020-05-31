@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import imutils
 import cv2
@@ -29,6 +31,7 @@ class SingleMotionDetector:
 
         if len(cnts) == 0:
             return None
+
 
         for c in cnts:
             (x, y, w, h) = cv2.boundingRect(c)

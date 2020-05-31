@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <title>General Kenobi's security cam</title>
+  </head>
+  <body>
+    <h1>Hello there!</h1>
+    <p>You expect movement here!</p>
+    <img src="{{ url_for('video_feed') }}">
+    <form action="/" method="post">
+      <input type="submit" value="Don't expect movement">
+    </form>
+  </body>
+</html>
