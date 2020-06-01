@@ -1,19 +1,22 @@
-import argparse
 import socket
-import threading
 
 from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import session
 from flask import Response
+from flask_mail import Mail
 
 from user import User
 import database.createdb as database
-import socket_fun
-import cv2 as cv
 import stream
 
 app = Flask(__name__)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'vikokotest16@gmail.com'
+app.config['MAIL_PASSWORD'] = 'veocyipvrnmtekep'
+mail = Mail(app)
 app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
 
 sock = socket.socket()
@@ -128,9 +131,9 @@ def logout():
 
 @app.route("/video_feed")
 def video_feed():
-    return Response(stream.generate(sock, True, False),
+    return Response(stream.generate(sock, True, False, mail, app),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     database.createDB()
-    app.run(host='0.0.0.0')
+    app.run(host='127.0.0.1')
