@@ -11,14 +11,11 @@ from user import User
 import database.createdb as database
 import socket_fun
 import cv2 as cv
-#from stream import generate, detect_motion
-# outputFrame = None
-# lock = threading.Lock()
+import stream
 
 app = Flask(__name__)
 app.secret_key = "aOwS(*dsjak,m,EWasd:123aADSjkd"
 
-lock = threading.Lock()
 sock = socket.socket()
 host = socket.gethostname()
 port = 9999
@@ -128,39 +125,12 @@ def logout():
         session.pop('email')
     return redirect(url_for('index'))
 
-def generate():
-    try:
-        connect, addr = sock.accept()
-        data = b''
-        while True:
-            frame, key, data = socket_fun.decrypt(connect, data) 
-            frame = cv.resize(frame, (0,0), fx=0.5, fy=0.5)
-            img = cv.imencode('.jpg', frame)[1].tobytes()
-            yield (b'--frame\r\n'b'Content-Type:image/jpeg\r\n\r\n'+img+b'\r\n')
-    except BlockingIOError:
-        return 'hello' 
-
 
 @app.route("/video_feed")
 def video_feed():
-    return Response(generate(),
+    return Response(stream.generate(sock),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     database.createDB()
     app.run(host='0.0.0.0')
-#    ap = argparse.ArgumentParser()
-#    ap.add_argument("-i", "--ip", type=str,
-#                    help="ip address of the device")
-#    ap.add_argument("-o", "--port", type=int,
-#                    help="ephemeral port number of the server (1024 to 65535)")
-#    ap.add_argument("-f", "--frame-count", type=int, default=32,
-#                    help="# of frames used to construct the background model")
-#    args = vars(ap.parse_args())
-#    t = threading.Thread(target=detect_motion, args=(
-#        args["frame_count"],))
-#    t.daemon = True
-#    t.start()
-
-#    app.run(host=args["ip"], port=args["port"], debug=True,
-#            threaded=True, use_reloader=False)
