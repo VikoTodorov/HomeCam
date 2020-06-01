@@ -128,7 +128,7 @@ def logout():
 
 @app.route("/video_feed")
 def video_feed():
-    return Response(stream.generate(sock),
+    return Response(stream.generate(sock, True, False),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
